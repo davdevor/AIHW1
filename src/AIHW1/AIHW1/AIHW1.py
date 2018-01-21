@@ -26,12 +26,15 @@ class NoMemeoryAgent:
 
     count = 0
     def __init__(self):
-        global game
-        game = CliffThrow()
-        globals()
+       global game
+       game  = CliffThrow()
 
     def getCount(self):
         return self.count
+
+    #returns how fast tot hrow the ball
+    def action(self):
+        return randint(1,100)
 
     def play(self):
         won = False
@@ -40,8 +43,8 @@ class NoMemeoryAgent:
         # it randomly choosing how fast to throw the object because
         # it doesn't remember how hard it threw it before
         while(not won):
-            num = randint(1, 100)
-            x = game.throw(num)
+            play = self.action()
+            x = game.throw(play)
             self.count += 1
             if(x == 0):
                 won = True
@@ -55,27 +58,46 @@ class MemeoryAgent:
 
     count = 0
     memory = 0
+    placement = 0
+
+    #initialize game object
     def __init__(self):
-        global game
         game = CliffThrow()
 
     def getCount(self):
         return self.count
 
+    #returns how fast to throw the ball based on memory and placement
+    def action(self):
+        if(self.placement == 0):
+            return randint(1,100)
+        elif(self.placement == 1):
+            return self.memory - 1
+        else:
+            return self.memory + 1
+
+    #updates the memory and placement variables
+    def updateMemory(self, newMemValue,newPlaceValue):
+        self.memory = newMemValue
+        self.placement = newPlaceValue
+    
+    #plays the game 
     def play(self):
         won = False
-        self.memory = randint(1, 100)
         while (not won):
-            x = game.throw(self.memory)
+            #get what we should throw it at 
+            #the action function decides this based on memory
+            play = self.action()
+            x = game.throw(play)
             self.count += 1
             if (x == 0):
                 won = True
             elif (x > 0):
                 print("Threw the ball too far need to decrease speed")
-                self.memory-=1
+                self.updateMemory(play,1)
             else:
                 print("Threw the ball too short need to increase speed")
-                self.memory+=1
+                self.updateMemory(play,-1)
         print("You won the game it took " + str(self.count) + " throws")
 
 def main():
@@ -83,6 +105,7 @@ def main():
     memCount = 0
     iterations = 50
     
+    #loop through multiple iterations of the game being to played to get average throws per agent
     for x in range(0,iterations):
         print("NO MEM AGENT ------")
         obj = NoMemeoryAgent()
