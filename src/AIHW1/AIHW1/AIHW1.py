@@ -36,6 +36,16 @@ class NoMemeoryAgent:
     def action(self):
         return randint(1,100)
 
+    def goal(self, x):
+        won = False
+        if(x == 0):
+            won = True
+        elif(x > 0):
+            print("Threw the ball too far")
+        else:                
+            print("Threw the ball too short")
+        return won
+
     def play(self):
         won = False
         self.count
@@ -46,12 +56,8 @@ class NoMemeoryAgent:
             play = self.action()
             x = game.throw(play)
             self.count += 1
-            if(x == 0):
-                won = True
-            elif(x > 0):
-                print("Threw the ball too far")
-            else:
-                print("Threw the ball too short")
+            won = self.goal(x)
+            
         print("You won the game it took "+ str(self.count)+" throws")
 
 class MemeoryAgent:
@@ -81,6 +87,18 @@ class MemeoryAgent:
         self.memory = newMemValue
         self.placement = newPlaceValue
     
+    def goal(self,x,play):
+        won = False
+        if (x == 0):
+            won = True
+        elif (x > 0):
+           print("Threw the ball too far need to decrease speed")
+           self.updateMemory(play,1)
+        else:
+           print("Threw the ball too short need to increase speed")
+           self.updateMemory(play,-1)
+        return won
+
     #plays the game 
     def play(self):
         won = False
@@ -89,15 +107,9 @@ class MemeoryAgent:
             #the action function decides this based on memory
             play = self.action()
             x = game.throw(play)
+            won = self.goal(x,play)
             self.count += 1
-            if (x == 0):
-                won = True
-            elif (x > 0):
-                print("Threw the ball too far need to decrease speed")
-                self.updateMemory(play,1)
-            else:
-                print("Threw the ball too short need to increase speed")
-                self.updateMemory(play,-1)
+                  
         print("You won the game it took " + str(self.count) + " throws")
 
 def main():
